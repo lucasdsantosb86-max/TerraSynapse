@@ -38,18 +38,23 @@ st.markdown("""
   --ts-line:#706E5D;
 }
 
-/* espaço geral do conteúdo */
-.block-container { padding-top: 1.0rem; padding-bottom: 1.0rem; }
+/* Esconde header/toolbar nativos do Streamlit (evita deslocamento e corte) */
+header[data-testid="stHeader"] { display:none !important; }
+div[data-testid="stToolbar"] { display:none !important; }
+#MainMenu, footer { visibility:hidden; height:0; }
+
+/* Espaço geral do conteúdo */
+.block-container { padding-top: 1.2rem !important; padding-bottom: 1.0rem; }
 
 /* Header brand (logo + textos) */
 .ts-brand {
-  display:flex; align-items:center; gap:.75rem;
-  margin: .15rem 0 .25rem 0;
+  display:flex; align-items:center; gap:.8rem;
+  margin: .10rem 0 .15rem 0;
 }
-.ts-logo { width:46px; height:46px; object-fit:contain; border-radius:8px; }
-.ts-title { font-weight:800; font-size:1.28rem; line-height:1.1; margin:0; padding:0; }
-.ts-tagline { color:var(--ts-ink-soft); margin-top:.10rem; font-size:.95rem; }
-.ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.55rem 0 1.1rem 0; }
+.ts-logo { width:46px; height:46px; object-fit:contain; border-radius:8px; display:block; }
+.ts-title { font-weight:800; font-size:1.30rem; line-height:1.1; margin:0; padding:0; }
+.ts-tagline { color:var(--ts-ink-soft); margin-top:.10rem; font-size:.96rem; }
+.ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.55rem 0 1.05rem 0; }
 
 /* Inputs / Botões */
 .stTextInput>div>div>input,
@@ -77,17 +82,20 @@ st.markdown("""
 .stSlider [data-baseweb="slider"] div[role="slider"] { box-shadow:none; }
 
 /* Links das fontes */
-.ts-source { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:.9rem; color:var(--ts-ink); opacity:.9; }
+.ts-source {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size:.9rem; color:var(--ts-ink); opacity:.9;
+}
 
-/* Responsivo: diminui levemente a logo/título em telas menores */
+/* Responsivo */
 @media (max-width: 640px){
   .ts-logo { width:40px; height:40px; }
-  .ts-title { font-size:1.15rem; }
+  .ts-title { font-size:1.18rem; }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Header (HTML flex robusto) ----------
+# ---------- Header (HTML flex robusto, sem depender do layout do Streamlit) ----------
 def render_brand():
     logo_html = ""
     if LOGO_PATH.exists():
