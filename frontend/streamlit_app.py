@@ -23,9 +23,9 @@ st.set_page_config(
 # ======= CSS mínimo só pra acabamento =======
 st.markdown("""
 <style>
-.block-container {padding-top: 1.0rem; padding-bottom: 1.0rem;}
-.stButton>button {padding:.5rem 1rem; border-radius:.75rem;}
-.stTextInput>div>div>input, .stTextArea>div>div>textarea {border-radius:.75rem;}
+.block-container { padding-top: 3.2rem !important; padding-bottom: 1.0rem; }
+.stButton>button { padding:.5rem 1rem; border-radius:.75rem; }
+.stTextInput>div>div>input, .stTextArea>div>div>textarea { border-radius:.75rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -110,5 +110,3 @@ with tabs[2]:
 # ---------- TAB: Clima (placeholder) ----------
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
-
-st.markdown(\"\"\"\n<style>\n.block-container { padding-top: 3.2rem !important; }\n</style>\n\"\"\", unsafe_allow_html=True)\n
