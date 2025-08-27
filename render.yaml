@@ -2,11 +2,11 @@
   - type: web
     name: terrasynapse-api
     env: python
-    plan: pro
+    plan: free            # <<< zero custo (hiberna quando ocioso)
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: bash start.sh
-    autoDeploy: true
+    autoDeploy: false     # evita rebuild automático
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
@@ -15,11 +15,11 @@
   - type: web
     name: terrasynapse-app
     env: python
-    plan: pro
+    plan: free            # <<< zero custo (hiberna quando ocioso)
     rootDir: .
     buildCommand: pip install -r frontend/requirements.txt
     startCommand: bash frontend/start.sh
-    autoDeploy: true
+    autoDeploy: false
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
