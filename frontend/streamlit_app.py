@@ -9,16 +9,14 @@ from PIL import Image
 
 # ---------- Config ----------
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
-
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 
-# Ícone da aba
-PAGE_ICON = "??"
+PAGE_ICON = "🌱"
 if LOGO_PATH.exists():
     try:
         PAGE_ICON = Image.open(LOGO_PATH)
     except Exception:
-        PAGE_ICON = "??"
+        PAGE_ICON = "🌱"
 
 st.set_page_config(
     page_title="TerraSynapse",
@@ -26,7 +24,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# ---------- CSS global (tema + polimentos) ----------
+# ---------- CSS global: tema, contraste, header, badge ----------
 st.markdown("""
 <style>
 :root{
@@ -38,37 +36,58 @@ st.markdown("""
   --ts-line:#706E5D;
 }
 
-/* Esconde header/toolbar nativos do Streamlit (evita deslocamento e corte) */
+/* Oculta cabeçalhos nativos do Streamlit */
 header[data-testid="stHeader"] { display:none !important; }
 div[data-testid="stToolbar"] { display:none !important; }
 #MainMenu, footer { visibility:hidden; height:0; }
 
-/* Espaço geral do conteúdo */
+/* Espaçamento do conteúdo */
 .block-container { padding-top: 0.9rem !important; padding-bottom: 1.0rem; }
 
-/* Header brand (logo + textos) */
+/* Brand */
 .ts-brand {
   display:flex; align-items:center; gap:.8rem;
   margin: .10rem 0 .15rem 0;
 }
-.ts-logo { width:50px; height:50px; object-fit:contain; border-radius:8px; display:block; }
+.ts-logo { width:46px; height:46px; object-fit:contain; border-radius:8px; display:block; }
 .ts-title { font-weight:800; font-size:1.30rem; line-height:1.1; margin:0; padding:0; }
 .ts-tagline { color:var(--ts-ink-soft); margin-top:.10rem; font-size:.96rem; }
 .ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.55rem 0 1.05rem 0; }
 
-/* Inputs / Botões */
-.stTextInput>div>div>input,
-.stTextArea>div>div>textarea { border-radius:.75rem; }
-.stButton>button {
-  padding:.55rem 1.05rem; border-radius:.8rem; font-weight:700;
-  background:var(--ts-accent); color:#1b1b1b; border:0;
+/* Inputs / Textareas */
+.stTextInput > div > div,
+.stTextArea  > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }
+.stTextInput > div > div:focus-within,
+.stTextArea  > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }
+.stTextInput input::placeholder,
+.stTextArea  textarea::placeholder { color:#9F9D8E; opacity:.95; }
+
+/* Selectbox */
+.stSelectbox > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }
+.stSelectbox [data-baseweb="select"] [role="combobox"] { color:#CFCBC0; }
+
+/* Slider */
+.stSlider [data-baseweb="slider"] > div > div { background:#403F2B; }
+.stSlider [role="slider"] { background:#F3F1C4; }
+
+/* Botões */
+.stDownloadButton > button, .stButton > button {
+  background:#F3F1C4; color:#1b1b1b; border:0; border-radius:.8rem;
+  padding:.55rem 1.05rem; font-weight:700;
 }
-.stButton>button:hover{ filter:brightness(0.96); }
+.stDownloadButton > button:disabled, .stButton > button:disabled {
+  filter:grayscale(.5) brightness(.85); opacity:.75; cursor:not-allowed;
+}
+.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) {
+  filter:brightness(.96);
+}
 
 /* Uploader */
-.css-1gulkj5 { border-radius:.8rem; }
+[data-testid="stFileUploader"] > div:first-child {
+  background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem;
+}
 
-/* Tabs com contraste melhor */
+/* Tabs */
 .stTabs [data-baseweb="tab-list"] { gap:.5rem; }
 .stTabs [data-baseweb="tab"]{
   background:var(--ts-bg-2); color:var(--ts-ink);
@@ -78,22 +97,32 @@ div[data-testid="stToolbar"] { display:none !important; }
   background:var(--ts-line); color:var(--ts-accent); font-weight:800;
 }
 
-/* Slider */
-.stSlider [data-baseweb="slider"] div[role="slider"] { box-shadow:none; }
-
-/* Links das fontes */
-.ts-source {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size:.9rem; color:var(--ts-ink); opacity:.9;
+/* Badge "em breve" na 4ª aba (sem HTML no label) */
+.stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4){
+  position: relative;
+}
+.stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4)::after{
+  content: "em breve";
+  display:inline-block;
+  margin-left:.45rem;
+  padding:.05rem .40rem;
+  border-radius:.50rem;
+  background:#706E5D;
+  color:#F3F1C4;
+  font-size:.80rem;
+  font-weight:700;
 }
 
 /* Responsivo */
 @media (max-width: 640px){
-  .ts-logo { width:50px; height:50px; }
+  .block-container { padding-top: .6rem !important; }
+  .ts-logo { width:40px; height:40px; }
   .ts-title { font-size:1.18rem; }
 }
 </style>
 """, unsafe_allow_html=True)
+
+# ---------- Favicon dedicado (além do page_icon) ----------
 try:
     if LOGO_PATH.exists():
         _b64fav = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
@@ -101,37 +130,35 @@ try:
 except Exception:
     pass
 
-
-# ---------- Header (HTML flex robusto, sem depender do layout do Streamlit) ----------
+# ---------- Header render ----------
 def render_brand():
-    logo_html = ""
     if LOGO_PATH.exists():
         try:
             b64 = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
             logo_html = f'<img class="ts-logo" src="data:image/png;base64,{b64}" alt="TerraSynapse logo" />'
         except Exception:
-            logo_html = '<span class="ts-logo">??</span>'
+            logo_html = '<span class="ts-logo">🌱</span>'
     else:
-        logo_html = '<span class="ts-logo">??</span>'
+        logo_html = '<span class="ts-logo">🌱</span>'
 
     st.markdown(
         f"""
-        <div class="ts-sticky"><div class="ts-brand">
+        <div class="ts-brand">
           {logo_html}
           <div>
             <div class="ts-title">TerraSynapse</div>
             <div class="ts-tagline">Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.</div>
           </div>
         </div>
-        </div><div class="ts-rule"></div>
+        <div class="ts-rule"></div>
         """,
         unsafe_allow_html=True
     )
 
 render_brand()
 
-# ---------- Abas ----------
-tabs = st.tabs(["Buscar respostas", "ExG", "Laudo PDF", "Clima (em breve)"])
+# ---------- Abas (strings simples, sem HTML/emoji) ----------
+tabs = st.tabs(["Buscar respostas", "ExG", "Laudo PDF", "Clima"])
 
 # ======================================================
 # TAB 1 — QA por documento
@@ -142,7 +169,7 @@ with tabs[0]:
     st.write("Envie arquivos de conhecimento **(.md, .txt, .pdf)** e faça perguntas. "
              "Enquanto o banco cresce, o app usa os docs enviados + exemplos.")
 
-    with st.expander("? Enviar documentos", expanded=False):
+    with st.expander("➕ Enviar documentos", expanded=False):
         uploads = st.file_uploader("Arquivos (.md, .txt, .pdf)", type=["md","txt","pdf"], accept_multiple_files=True)
         if uploads and st.button("Enviar para a IA"):
             ok, fail = 0, 0
@@ -171,7 +198,7 @@ with tabs[0]:
             r = requests.post(f"{API_URL}/qa", json=payload, timeout=120)
             if r.ok:
                 data = r.json()
-                st.success("? Resposta encontrada:")
+                st.success("✅ Resposta encontrada:")
                 st.write(data.get("answer", ""))
 
                 sources = data.get("sources", []) or []
@@ -233,29 +260,3 @@ with tabs[2]:
 # ======================================================
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
-
-
-
-
-st.markdown(\"\"\"\n<style>\n/* ---- TerraSynapse: contrast refinements ---- */\n/* Inputs */\n.stTextInput > div > div,\n.stTextArea  > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stTextInput > div > div:focus-within,\n.stTextArea  > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }\n.stTextInput input::placeholder,\n.stTextArea  textarea::placeholder { color:#9F9D8E; opacity:.95; }\n\n/* Selectbox / dropdown */\n.stSelectbox > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stSelectbox [data-baseweb=\"select\"] [role=\"combobox\"] { color:#CFCBC0; }\n\n/* Slider */\n.stSlider [data-baseweb=\"slider\"] > div > div { background:#403F2B; }\n.stSlider [role=\"slider\"] { background:#F3F1C4; }\n\n/* Botões */\n.stDownloadButton > button, .stButton > button {\n  background:#F3F1C4; color:#1b1b1b; border:0; border-radius:.8rem;\n  padding:.55rem 1.05rem; font-weight:700;\n}\n.stDownloadButton > button:disabled, .stButton > button:disabled {\n  filter:grayscale(.5) brightness(.85); opacity:.75; cursor:not-allowed;\n}\n.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) {\n  filter:brightness(.96);\n}\n\n/* File uploader */\n[data-testid=\"stFileUploader\"] > div:first-child {\n  background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem;\n}\n\n/* Topo responsivo: reduz padding em telas pequenas */\n@media (max-width: 640px){ .block-container { padding-top: 0.9rem !important; padding-bottom: 1.0rem; } }\n</style>\n\"\"\", unsafe_allow_html=True)\n
-
-st.markdown("""
-<style>
-/* ---- TerraSynapse: tab badge css ---- */
-.stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4){
-  position: relative;
-}
-.stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4)::after{
-  content: "em breve";
-  display:inline-block;
-  margin-left:.45rem;
-  padding:.05rem .40rem;
-  border-radius:.50rem;
-  background:#706E5D;
-  color:#F3F1C4;
-  font-size:.80rem;
-  font-weight:700;
-}
-</style>
-""", unsafe_allow_html=True)
-
