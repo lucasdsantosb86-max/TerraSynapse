@@ -11,6 +11,8 @@ from PIL import Image
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
+
+# Ícone da aba
 PAGE_ICON = "🌱"
 if LOGO_PATH.exists():
     try:
@@ -24,7 +26,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# ---------- CSS global (acabamento visual) ----------
+# ---------- CSS global (tema + polimentos) ----------
 st.markdown("""
 <style>
 :root{
@@ -36,23 +38,27 @@ st.markdown("""
   --ts-line:#706E5D;
 }
 
-/* paddings gerais */
+/* espaço geral do conteúdo */
 .block-container { padding-top: 1.0rem; padding-bottom: 1.0rem; }
 
-/* Header brand */
-.ts-brand { display:flex; align-items:center; gap:.65rem; }
-.ts-title { font-weight:800; font-size:1.25rem; line-height:1.1; margin:0; padding:0; }
-.ts-tagline { color:var(--ts-ink-soft); margin-top:.15rem; }
-.ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.45rem 0 1.1rem 0; }
+/* Header brand (logo + textos) */
+.ts-brand {
+  display:flex; align-items:center; gap:.75rem;
+  margin: .15rem 0 .25rem 0;
+}
+.ts-logo { width:46px; height:46px; object-fit:contain; border-radius:8px; }
+.ts-title { font-weight:800; font-size:1.28rem; line-height:1.1; margin:0; padding:0; }
+.ts-tagline { color:var(--ts-ink-soft); margin-top:.10rem; font-size:.95rem; }
+.ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.55rem 0 1.1rem 0; }
 
 /* Inputs / Botões */
 .stTextInput>div>div>input,
 .stTextArea>div>div>textarea { border-radius:.75rem; }
 .stButton>button {
   padding:.55rem 1.05rem; border-radius:.8rem; font-weight:700;
-  background:var(--ts-accent); color:#1c1c1c; border:0;
+  background:var(--ts-accent); color:#1b1b1b; border:0;
 }
-.stButton>button:hover{ filter:brightness(0.95); }
+.stButton>button:hover{ filter:brightness(0.96); }
 
 /* Uploader */
 .css-1gulkj5 { border-radius:.8rem; }
@@ -72,22 +78,42 @@ st.markdown("""
 
 /* Links das fontes */
 .ts-source { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:.9rem; color:var(--ts-ink); opacity:.9; }
+
+/* Responsivo: diminui levemente a logo/título em telas menores */
+@media (max-width: 640px){
+  .ts-logo { width:40px; height:40px; }
+  .ts-title { font-size:1.15rem; }
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Header (logo + título sem corte) ----------
-col_logo, col_text = st.columns([0.06, 0.94])
-with col_logo:
+# ---------- Header (HTML flex robusto) ----------
+def render_brand():
+    logo_html = ""
     if LOGO_PATH.exists():
-        st.image(str(LOGO_PATH), width=44)
+        try:
+            b64 = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
+            logo_html = f'<img class="ts-logo" src="data:image/png;base64,{b64}" alt="TerraSynapse logo" />'
+        except Exception:
+            logo_html = '<span class="ts-logo">🌱</span>'
     else:
-        st.markdown("🌱", unsafe_allow_html=True)
+        logo_html = '<span class="ts-logo">🌱</span>'
 
-with col_text:
-    st.markdown('<div class="ts-brand"><span class="ts-title">TerraSynapse</span></div>', unsafe_allow_html=True)
-    st.markdown('<div class="ts-tagline">Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.</div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="ts-brand">
+          {logo_html}
+          <div>
+            <div class="ts-title">TerraSynapse</div>
+            <div class="ts-tagline">Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.</div>
+          </div>
+        </div>
+        <div class="ts-rule"></div>
+        """,
+        unsafe_allow_html=True
+    )
 
-st.markdown('<div class="ts-rule"></div>', unsafe_allow_html=True)
+render_brand()
 
 # ---------- Abas ----------
 tabs = st.tabs(["🔎 Buscar respostas", "🌿 ExG", "📝 Laudo PDF", "🌤️ Clima (em breve)"])
