@@ -53,5 +53,3 @@ else:
             st.download_button("Baixar PDF", b, file_name=data["filename"], mime="application/pdf")
         else:
             st.error(r.text)
-
-st.caption(f"API: {API_URL}")
