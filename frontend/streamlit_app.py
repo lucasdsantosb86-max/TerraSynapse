@@ -2,16 +2,26 @@
 from io import BytesIO
 import base64
 from pathlib import Path
+from PIL import Image
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
+# === Logo / ícone da aba ===
+LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
+PAGE_ICON = "🌱"
+if LOGO_PATH.exists():
+    try:
+        PAGE_ICON = Image.open(LOGO_PATH)
+    except Exception:
+        PAGE_ICON = "🌱"
+
 st.set_page_config(
     page_title="TerraSynapse",
-    page_icon="🌱",
+    page_icon=PAGE_ICON,
     layout="wide"
 )
 
-# ======= CSS do header / tema =======
+# ======= CSS do header / acabamento =======
 st.markdown("""
 <style>
 .block-container {padding-top: 1.2rem; padding-bottom: 1.2rem;}
@@ -26,8 +36,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ======= Branding (evita corte; usa logo se existir) =======
-LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
+# ======= Branding (usa logo se existir; sem corte) =======
 def render_brand():
     img_html = ""
     if LOGO_PATH.exists():
