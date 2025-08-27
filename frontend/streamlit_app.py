@@ -33,7 +33,7 @@ st.markdown("""
 left, right = st.columns([0.06, 0.94])
 with left:
     if LOGO_PATH.exists():
-        st.image(str(LOGO_PATH), width=36)
+        st.image(str(LOGO_PATH), width=44)
     else:
         st.markdown("🌱", unsafe_allow_html=True)
 with right:
