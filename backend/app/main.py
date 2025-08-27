@@ -1,4 +1,5 @@
-﻿from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+﻿import os
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -11,11 +12,22 @@ from .services.qa import answer_question_by_document
 from .services.exg import compute_exg
 from .services.pdf import build_simple_pdf
 
+def _parse_allowed_origins():
+    raw = os.environ.get("ALLOWED_ORIGINS", "")
+    origins = [o.strip() for o in raw.split(",") if o.strip()]
+    # fallback seguro (se env faltar)
+    if not origins:
+        origins = [
+            "https://app.terrasynapse.com",
+            "https://terrasynapse-app-3sja.onrender.com",
+        ]
+    return origins
+
 app = FastAPI(title="TerraSynapse API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ajuste depois p/ domínios finais (app/api.terrasynapse.com)
+    allow_origins=_parse_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

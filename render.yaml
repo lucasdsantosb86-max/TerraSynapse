@@ -11,6 +11,8 @@
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+      - key: ALLOWED_ORIGINS
+        value: https://app.terrasynapse.com,https://terrasynapse-app-3sja.onrender.com
 
   - type: web
     name: terrasynapse-app
@@ -24,7 +26,4 @@
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: API_URL
-        fromService:
-          name: terrasynapse-api
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://api.terrasynapse.com
