@@ -1,4 +1,4 @@
-import os
+Ôªøimport os
 import base64
 from io import BytesIO
 from pathlib import Path
@@ -12,7 +12,7 @@ API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 
-# Õcone da aba
+# √çcone da aba
 PAGE_ICON = "??"
 if LOGO_PATH.exists():
     try:
@@ -43,8 +43,8 @@ header[data-testid="stHeader"] { display:none !important; }
 div[data-testid="stToolbar"] { display:none !important; }
 #MainMenu, footer { visibility:hidden; height:0; }
 
-/* EspaÁo geral do conte˙do */
-.block-container { padding-top: 1.2rem !important; padding-bottom: 1.0rem; }
+/* Espa√ßo geral do conte√∫do */
+.block-container { padding-top: 0.9rem !important; padding-bottom: 1.0rem; }
 
 /* Header brand (logo + textos) */
 .ts-brand {
@@ -56,7 +56,7 @@ div[data-testid="stToolbar"] { display:none !important; }
 .ts-tagline { color:var(--ts-ink-soft); margin-top:.10rem; font-size:.96rem; }
 .ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.55rem 0 1.05rem 0; }
 
-/* Inputs / Botıes */
+/* Inputs / Bot√µes */
 .stTextInput>div>div>input,
 .stTextArea>div>div>textarea { border-radius:.75rem; }
 .stButton>button {
@@ -113,7 +113,7 @@ def render_brand():
           {logo_html}
           <div>
             <div class="ts-title">TerraSynapse</div>
-            <div class="ts-tagline">Plataforma de IA para o agronegÛcio ó QA por documento, ExG e Laudo PDF.</div>
+            <div class="ts-tagline">Plataforma de IA para o agroneg√≥cio ‚Äî QA por documento, ExG e Laudo PDF.</div>
           </div>
         </div>
         </div><div class="ts-rule"></div>
@@ -127,12 +127,12 @@ render_brand()
 tabs = st.tabs(["?? Buscar respostas", "?? ExG", "?? Laudo PDF", "??? Clima <span class="ts-badge">em breve</span>"])
 
 # ======================================================
-# TAB 1 ó QA por documento
+# TAB 1 ‚Äî QA por documento
 # ======================================================
 with tabs[0]:
     st.subheader("Buscar respostas por documento")
 
-    st.write("Envie arquivos de conhecimento **(.md, .txt, .pdf)** e faÁa perguntas. "
+    st.write("Envie arquivos de conhecimento **(.md, .txt, .pdf)** e fa√ßa perguntas. "
              "Enquanto o banco cresce, o app usa os docs enviados + exemplos.")
 
     with st.expander("? Enviar documentos", expanded=False):
@@ -150,12 +150,12 @@ with tabs[0]:
             if ok and not fail:
                 st.success(f"{ok} arquivo(s) enviado(s) com sucesso.")
             else:
-                st.warning(f"Uploads concluÌdos. Sucesso: {ok} ï Falhas: {fail}")
+                st.warning(f"Uploads conclu√≠dos. Sucesso: {ok} ‚Ä¢ Falhas: {fail}")
 
-    ask = st.text_input("Sua pergunta", placeholder="Ex.: Como ajustar manejo em perÌodo de seca?")
-    st.caption("Fontes padr„o: docs enviados (`data/docs`) + exemplos internos. "
-               "Pode informar um padr„o de busca abaixo, se quiser.")
-    custom_glob = st.text_input("Padr„o de documentos (opcional)", value="", placeholder="Deixe vazio para usar padr„o autom·tico")
+    ask = st.text_input("Sua pergunta", placeholder="Ex.: Como ajustar manejo em per√≠odo de seca?")
+    st.caption("Fontes padr√£o: docs enviados (`data/docs`) + exemplos internos. "
+               "Pode informar um padr√£o de busca abaixo, se quiser.")
+    custom_glob = st.text_input("Padr√£o de documentos (opcional)", value="", placeholder="Deixe vazio para usar padr√£o autom√°tico")
     top_k = st.slider("Quantas fontes considerar (Top K)", 1, 10, 5)
 
     if st.button("Buscar resposta"):
@@ -171,7 +171,7 @@ with tabs[0]:
                 if sources:
                     st.markdown("**Fontes utilizadas:**")
                     for s in sources:
-                        st.markdown(f'<div class="ts-source">ï {s}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="ts-source">‚Ä¢ {s}</div>', unsafe_allow_html=True)
                 else:
                     st.caption("Nenhuma fonte retornada.")
             else:
@@ -180,10 +180,10 @@ with tabs[0]:
             st.error(f"Erro ao consultar a API: {e}")
 
 # ======================================================
-# TAB 2 ó Õndice ExG
+# TAB 2 ‚Äî √çndice ExG
 # ======================================================
 with tabs[1]:
-    st.subheader("Õndice de VegetaÁ„o ExG")
+    st.subheader("√çndice de Vegeta√ß√£o ExG")
     img = st.file_uploader("Imagem RGB", type=["jpg","jpeg","png"], key="exg_upl")
     if img and st.button("Calcular ExG"):
         try:
@@ -191,7 +191,7 @@ with tabs[1]:
             r = requests.post(f"{API_URL}/exg", files=files, timeout=120)
             if r.ok:
                 data = r.json()
-                st.metric("ExG mÈdio", f"{data.get('exg_mean', 0):.4f}")
+                st.metric("ExG m√©dio", f"{data.get('exg_mean', 0):.4f}")
                 b64 = data.get("preview_png_base64", "")
                 if b64:
                     st.image(BytesIO(base64.b64decode(b64)), caption="Preview ExG")
@@ -201,12 +201,12 @@ with tabs[1]:
             st.error(f"Erro ao processar imagem: {e}")
 
 # ======================================================
-# TAB 3 ó Laudo PDF
+# TAB 3 ‚Äî Laudo PDF
 # ======================================================
 with tabs[2]:
     st.subheader("Gerar Laudo PDF")
-    title = st.text_input("TÌtulo", "Laudo TerraSynapse")
-    body = st.text_area("Conte˙do", "Resultados e observaÁıes... (cole aqui)")
+    title = st.text_input("T√≠tulo", "Laudo TerraSynapse")
+    body = st.text_area("Conte√∫do", "Resultados e observa√ß√µes... (cole aqui)")
 
     if st.button("Gerar PDF"):
         try:
@@ -222,10 +222,12 @@ with tabs[2]:
             st.error(f"Erro ao gerar PDF: {e}")
 
 # ======================================================
-# TAB 4 ó Clima (placeholder)
+# TAB 4 ‚Äî Clima (placeholder)
 # ======================================================
 with tabs[3]:
-    st.info("MÛdulo de clima ser· integrado em breve (dados p˙blicos + alertas).")
+    st.info("M√≥dulo de clima ser√° integrado em breve (dados p√∫blicos + alertas).")
 
 
 
+
+st.markdown(\"\"\"\n<style>\n/* ---- TerraSynapse: contrast refinements ---- */\n/* Inputs */\n.stTextInput > div > div,\n.stTextArea  > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stTextInput > div > div:focus-within,\n.stTextArea  > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }\n.stTextInput input::placeholder,\n.stTextArea  textarea::placeholder { color:#9F9D8E; opacity:.95; }\n\n/* Selectbox / dropdown */\n.stSelectbox > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stSelectbox [data-baseweb=\"select\"] [role=\"combobox\"] { color:#CFCBC0; }\n\n/* Slider */\n.stSlider [data-baseweb=\"slider\"] > div > div { background:#403F2B; }\n.stSlider [role=\"slider\"] { background:#F3F1C4; }\n\n/* Bot√µes */\n.stDownloadButton > button, .stButton > button {\n  background:#F3F1C4; color:#1b1b1b; border:0; border-radius:.8rem;\n  padding:.55rem 1.05rem; font-weight:700;\n}\n.stDownloadButton > button:disabled, .stButton > button:disabled {\n  filter:grayscale(.5) brightness(.85); opacity:.75; cursor:not-allowed;\n}\n.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) {\n  filter:brightness(.96);\n}\n\n/* File uploader */\n[data-testid=\"stFileUploader\"] > div:first-child {\n  background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem;\n}\n\n/* Topo responsivo: reduz padding em telas pequenas */\n@media (max-width: 640px){ .block-container { padding-top: .6rem !important; } }\n</style>\n\"\"\", unsafe_allow_html=True)\n
