@@ -94,6 +94,13 @@ div[data-testid="stToolbar"] { display:none !important; }
 }
 </style>
 """, unsafe_allow_html=True)
+try:
+    if LOGO_PATH.exists():
+        _b64fav = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
+        st.markdown(f"<link rel='icon' type='image/png' href='data:image/png;base64,{_b64fav}'>", unsafe_allow_html=True)
+except Exception:
+    pass
+
 
 # ---------- Header (HTML flex robusto, sem depender do layout do Streamlit) ----------
 def render_brand():
@@ -230,7 +237,7 @@ with tabs[3]:
 
 
 
-st.markdown(\"\"\"\n<style>\n/* ---- TerraSynapse: contrast refinements ---- */\n/* Inputs */\n.stTextInput > div > div,\n.stTextArea  > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stTextInput > div > div:focus-within,\n.stTextArea  > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }\n.stTextInput input::placeholder,\n.stTextArea  textarea::placeholder { color:#9F9D8E; opacity:.95; }\n\n/* Selectbox / dropdown */\n.stSelectbox > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stSelectbox [data-baseweb=\"select\"] [role=\"combobox\"] { color:#CFCBC0; }\n\n/* Slider */\n.stSlider [data-baseweb=\"slider\"] > div > div { background:#403F2B; }\n.stSlider [role=\"slider\"] { background:#F3F1C4; }\n\n/* Botões */\n.stDownloadButton > button, .stButton > button {\n  background:#F3F1C4; color:#1b1b1b; border:0; border-radius:.8rem;\n  padding:.55rem 1.05rem; font-weight:700;\n}\n.stDownloadButton > button:disabled, .stButton > button:disabled {\n  filter:grayscale(.5) brightness(.85); opacity:.75; cursor:not-allowed;\n}\n.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) {\n  filter:brightness(.96);\n}\n\n/* File uploader */\n[data-testid=\"stFileUploader\"] > div:first-child {\n  background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem;\n}\n\n/* Topo responsivo: reduz padding em telas pequenas */\n@media (max-width: 640px){ .block-container { padding-top: .6rem !important; } }\n</style>\n\"\"\", unsafe_allow_html=True)\n
+st.markdown(\"\"\"\n<style>\n/* ---- TerraSynapse: contrast refinements ---- */\n/* Inputs */\n.stTextInput > div > div,\n.stTextArea  > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stTextInput > div > div:focus-within,\n.stTextArea  > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }\n.stTextInput input::placeholder,\n.stTextArea  textarea::placeholder { color:#9F9D8E; opacity:.95; }\n\n/* Selectbox / dropdown */\n.stSelectbox > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }\n.stSelectbox [data-baseweb=\"select\"] [role=\"combobox\"] { color:#CFCBC0; }\n\n/* Slider */\n.stSlider [data-baseweb=\"slider\"] > div > div { background:#403F2B; }\n.stSlider [role=\"slider\"] { background:#F3F1C4; }\n\n/* Botões */\n.stDownloadButton > button, .stButton > button {\n  background:#F3F1C4; color:#1b1b1b; border:0; border-radius:.8rem;\n  padding:.55rem 1.05rem; font-weight:700;\n}\n.stDownloadButton > button:disabled, .stButton > button:disabled {\n  filter:grayscale(.5) brightness(.85); opacity:.75; cursor:not-allowed;\n}\n.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) {\n  filter:brightness(.96);\n}\n\n/* File uploader */\n[data-testid=\"stFileUploader\"] > div:first-child {\n  background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem;\n}\n\n/* Topo responsivo: reduz padding em telas pequenas */\n@media (max-width: 640px){ .block-container { padding-top: 0.9rem !important; padding-bottom: 1.0rem; } }\n</style>\n\"\"\", unsafe_allow_html=True)\n
 
 st.markdown("""
 <style>
@@ -251,3 +258,4 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
