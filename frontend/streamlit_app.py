@@ -109,14 +109,14 @@ def render_brand():
 
     st.markdown(
         f"""
-        <div class="ts-brand">
+        <div class="ts-sticky"><div class="ts-brand">
           {logo_html}
           <div>
             <div class="ts-title">TerraSynapse</div>
             <div class="ts-tagline">Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.</div>
           </div>
         </div>
-        <div class="ts-rule"></div>
+        </div><div class="ts-rule"></div>
         """,
         unsafe_allow_html=True
     )
@@ -226,4 +226,5 @@ with tabs[2]:
 # ======================================================
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
+
 
