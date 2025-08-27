@@ -6,7 +6,6 @@ from PIL import Image
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
-# === Logo / ícone da aba ===
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 PAGE_ICON = "🌱"
 if LOGO_PATH.exists():
@@ -21,37 +20,25 @@ st.set_page_config(
     layout="wide"
 )
 
-# ======= CSS do header / acabamento =======
+# ======= CSS mínimo só pra acabamento =======
 st.markdown("""
 <style>
-.block-container {padding-top: 1.2rem; padding-bottom: 1.2rem;}
-.header-brand{
-  display:flex; align-items:center; gap:.6rem;
-  white-space:nowrap; overflow:visible;
-}
-.header-brand img{ width:28px; height:28px; border-radius:6px; }
-.header-title{ font-size:1.15rem; font-weight:800; line-height:1.2; margin:0; padding:0;}
+.block-container {padding-top: 1.0rem; padding-bottom: 1.0rem;}
 .stButton>button {padding:.5rem 1rem; border-radius:.75rem;}
 .stTextInput>div>div>input, .stTextArea>div>div>textarea {border-radius:.75rem;}
 </style>
 """, unsafe_allow_html=True)
 
-# ======= Branding (usa logo se existir; sem corte) =======
-def render_brand():
-    img_html = ""
+# ======= BRANDING (sem HTML complexo) =======
+left, right = st.columns([0.06, 0.94])
+with left:
     if LOGO_PATH.exists():
-        b64 = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
-        img_html = f'<img src="data:image/png;base64,{b64}" alt="TerraSynapse" />'
-    st.markdown(f'''
-    <div class="header-brand">{img_html}<span class="header-title">TerraSynapse</span></div>
-    ''', unsafe_allow_html=True)
-
-col1, col2 = st.columns([1,3])
-with col1:
-    render_brand()
-with col2:
+        st.image(str(LOGO_PATH), width=36)
+    else:
+        st.markdown("🌱", unsafe_allow_html=True)
+with right:
+    st.markdown("### TerraSynapse")
     st.caption("Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.")
-
 tabs = st.tabs(["🔎 Buscar respostas", "🌿 ExG", "📝 Laudo PDF", "🌤️ Clima (em breve)"])
 
 # ---------- TAB: Buscar respostas ----------
@@ -123,3 +110,4 @@ with tabs[2]:
 # ---------- TAB: Clima (placeholder) ----------
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
+
