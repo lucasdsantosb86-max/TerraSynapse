@@ -1,6 +1,6 @@
-﻿[theme]
-primaryColor="#22c55e"            # Verde moderninho (ajuste depois)
-backgroundColor="#0b1220"         # Fundo escuro
-secondaryBackgroundColor="#111827"# Cards
-textColor="#e5e7eb"               # Texto claro
+[theme]
+primaryColor="#22c55e"
+backgroundColor="#0b1220"
+secondaryBackgroundColor="#111827"
+textColor="#e5e7eb"
 font="sans serif"
