@@ -1,6 +1,7 @@
 ﻿import os, requests, streamlit as st
 from io import BytesIO
 import base64
+from pathlib import Path
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
@@ -10,30 +11,38 @@ st.set_page_config(
     layout="wide"
 )
 
-# ======= CSS simples para dar acabamento =======
+# ======= CSS do header / tema =======
 st.markdown("""
 <style>
-/* centraliza e dá respiro */
-.block-container {padding-top: 1.5rem; padding-bottom: 1.5rem;}
-/* cards mais suaves */
-div[data-testid="stMetricValue"] {font-weight:700;}
-/* botões maiores */
-.stButton>button {padding: 0.5rem 1rem; border-radius: 0.75rem;}
-/* caixas */
-.stTextInput>div>div>input, .stTextArea>div>div>textarea {
-  border-radius: 0.75rem;
+.block-container {padding-top: 1.2rem; padding-bottom: 1.2rem;}
+.header-brand{
+  display:flex; align-items:center; gap:.6rem;
+  white-space:nowrap; overflow:visible;
 }
+.header-brand img{ width:28px; height:28px; border-radius:6px; }
+.header-title{ font-size:1.15rem; font-weight:800; line-height:1.2; margin:0; padding:0;}
+.stButton>button {padding:.5rem 1rem; border-radius:.75rem;}
+.stTextInput>div>div>input, .stTextArea>div>div>textarea {border-radius:.75rem;}
 </style>
 """, unsafe_allow_html=True)
 
-# ======= Header =======
+# ======= Branding (evita corte; usa logo se existir) =======
+LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
+def render_brand():
+    img_html = ""
+    if LOGO_PATH.exists():
+        b64 = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
+        img_html = f'<img src="data:image/png;base64,{b64}" alt="TerraSynapse" />'
+    st.markdown(f'''
+    <div class="header-brand">{img_html}<span class="header-title">TerraSynapse</span></div>
+    ''', unsafe_allow_html=True)
+
 col1, col2 = st.columns([1,3])
 with col1:
-    st.markdown("### 🌱 TerraSynapse")
+    render_brand()
 with col2:
     st.caption("Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.")
 
-# ======= Navegação =======
 tabs = st.tabs(["🔎 Buscar respostas", "🌿 ExG", "📝 Laudo PDF", "🌤️ Clima (em breve)"])
 
 # ---------- TAB: Buscar respostas ----------
@@ -49,16 +58,14 @@ with tabs[0]:
                 files = {"file": (f.name, f.getvalue(), f"type")}
                 try:
                     r = requests.post(f"{API_URL}/upload_doc", files=files, timeout=120)
-                    if r.ok:
-                        ok_cnt += 1
-                    else:
-                        fail_cnt += 1
+                    ok_cnt += 1 if r.ok else 0
+                    fail_cnt += 0 if r.ok else 1
                 except Exception:
                     fail_cnt += 1
             st.success(f"Uploads concluídos. Sucesso: {ok_cnt} • Falhas: {fail_cnt}")
 
     q = st.text_input("Sua pergunta", placeholder="Ex.: Como ajustar manejo em período de seca?")
-    st.caption("Fontes padrão: docs enviados (data/docs) + exemplos internos. Pode informar um padrão de busca avançado abaixo, se quiser.")
+    st.caption("Fontes padrão: docs enviados (data/docs) + exemplos internos. Pode informar um padrão de busca abaixo.")
     custom_glob = st.text_input("Padrão de documentos (opcional)", value="", placeholder="Deixe vazio para usar padrão automático")
     top_k = st.slider("Quantas fontes considerar (Top K)", 1, 10, 5)
 
