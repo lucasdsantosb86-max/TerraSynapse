@@ -124,7 +124,7 @@ def render_brand():
 render_brand()
 
 # ---------- Abas ----------
-tabs = st.tabs(["?? Buscar respostas", "?? ExG", "?? Laudo PDF", "??? Clima (em breve)"])
+tabs = st.tabs(["?? Buscar respostas", "?? ExG", "?? Laudo PDF", "??? Clima <span class="ts-badge">em breve</span>"])
 
 # ======================================================
 # TAB 1 — QA por documento
@@ -226,5 +226,6 @@ with tabs[2]:
 # ======================================================
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
+
 
 
