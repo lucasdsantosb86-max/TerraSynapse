@@ -1,4 +1,5 @@
 ﻿import os
+from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -15,15 +16,13 @@ from .services.pdf import build_simple_pdf
 def _parse_allowed_origins():
     raw = os.environ.get("ALLOWED_ORIGINS", "")
     origins = [o.strip() for o in raw.split(",") if o.strip()]
-    # fallback seguro (se env faltar)
     if not origins:
         origins = [
             "https://app.terrasynapse.com",
-            "https://terrasynapse-app-3sja.onrender.com",
         ]
     return origins
 
-app = FastAPI(title="TerraSynapse API", version="1.0.0")
+app = FastAPI(title="TerraSynapse API", version="1.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -73,3 +72,22 @@ async def pdf_report(title: str = Form(...), body: str = Form(...)):
     pdf_bytes = build_simple_pdf(title, body)
     b64 = base64.b64encode(pdf_bytes).decode("utf-8")
     return {"pdf_base64": b64, "filename": "relatorio_terrasynapse.pdf"}
+
+@app.post("/upload_doc")
+async def upload_doc(file: UploadFile = File(...)):
+    # aceita .md, .txt, .pdf e grava em repo_root/data/docs
+    ext = Path(file.filename).suffix.lower()
+    if ext not in (".md", ".txt", ".pdf"):
+        raise HTTPException(400, "Formato não suportado. Use .md, .txt ou .pdf")
+    try:
+        repo_root = Path(__file__).resolve().parents[2]  # .../backend
+        docs_dir = repo_root.parent / "data" / "docs" if (repo_root.name == "backend") else repo_root / "data" / "docs"
+        docs_dir.mkdir(parents=True, exist_ok=True)
+        safe_name = Path(file.filename).name.replace("..","_")
+        dest = docs_dir / safe_name
+        content = await file.read()
+        with open(dest, "wb") as f:
+            f.write(content)
+        return {"saved": str(dest)}
+    except Exception as e:
+        raise HTTPException(500, f"Falha ao salvar: {e}")
