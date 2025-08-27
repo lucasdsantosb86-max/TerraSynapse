@@ -111,3 +111,4 @@ with tabs[2]:
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
 
+st.markdown(\"\"\"\n<style>\n.block-container { padding-top: 3.2rem !important; }\n</style>\n\"\"\", unsafe_allow_html=True)\n
