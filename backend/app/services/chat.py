@@ -61,10 +61,9 @@ def retrieve_context(question: str, doc_paths: Optional[List[str]], top_k: int =
     top = scored[:max(1, top_k)]
 
     sources = [fp for fp,_,_ in top]
-    # Monta um contexto concatenado, limitado
     ctx_parts, total = [], 0
     for fp, score, txt in top:
-        cut = txt[:2000]  # 2k por fonte (simples e seguro)
+        cut = txt[:2000]
         ctx_parts.append(f"\n### {Path(fp).name}\n{cut}\n")
         total += len(cut)
         if total >= max_chars:
@@ -72,10 +71,6 @@ def retrieve_context(question: str, doc_paths: Optional[List[str]], top_k: int =
     return "\n".join(ctx_parts), sources
 
 def call_llm_openai(messages: list, system_prompt: str, api_key: str, model: str = None, temperature: float = 0.3) -> str:
-    """
-    Chama OpenAI /v1/chat/completions via requests (sem depender do SDK).
-    messages: [{'role':'user'|'assistant'|'system','content':'...'}, ...]
-    """
     import requests
     url = "https://api.openai.com/v1/chat/completions"
     mdl = model or os.environ.get("LLM_MODEL","gpt-4o-mini")
@@ -94,18 +89,10 @@ def call_llm_openai(messages: list, system_prompt: str, api_key: str, model: str
     return data["choices"][0]["message"]["content"].strip()
 
 def answer_chat(messages: List[dict], doc_paths: Optional[List[str]], top_k: int = 4) -> Tuple[str, List[str]]:
-    """
-    messages: lista de mensagens do chat [{'role':'user'|'assistant','content': str}, ...]
-    Retorna (assistant_text, sources)
-    """
-    # última pergunta do usuário
     user_utterances = [m["content"] for m in messages if m.get("role") == "user"]
     question = user_utterances[-1] if user_utterances else ""
-
-    # RAG: recupera contexto + fontes
     context, sources = retrieve_context(question, doc_paths, top_k=top_k, max_chars=6000)
 
-    # Monta system prompt
     system_prompt = (
         "Você é a IA TerraSynapse. Responda EM PORTUGUÊS DO BRASIL de forma concisa, "
         "citando fatos APENAS do CONTEXTO quando pertinente. Se algo não estiver no contexto, "
@@ -116,17 +103,14 @@ def answer_chat(messages: List[dict], doc_paths: Optional[List[str]], top_k: int
         "=== FIM DO CONTEXTO ===\n"
     )
 
-    # Tenta LLM (OpenAI); se não houver chave, cai no fallback
     api_key = os.environ.get("OPENAI_API_KEY","").strip()
     model = os.environ.get("LLM_MODEL","gpt-4o-mini")
     if api_key:
         try:
             return call_llm_openai(messages, system_prompt, api_key, model=model), sources
-        except Exception as e:
-            # falhou chamada externa  fallback
+        except Exception:
             pass
 
-    # Fallback: resposta simples baseada na melhor fonte (sem LLM)
     if context.strip():
         safe = context[:800].replace("\n"," ")
         return (f"(Sem LLM) Com base nas fontes, aqui vai um resumo: {safe} ...", sources)
