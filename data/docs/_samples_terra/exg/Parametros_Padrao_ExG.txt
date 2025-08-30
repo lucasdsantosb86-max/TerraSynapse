@@ -1,0 +1,6 @@
+﻿# Parametros padrão ExG (Teste)
+# Faixas de referência (ajuste conforme cultura/iluminação):
+#   vegetação alta:   ExG > 0.10
+#   vegetação média:  0.050.10
+#   baixa/solo:       < 0.05
+# Observação: normalizar e calibrar por amostras locais.
