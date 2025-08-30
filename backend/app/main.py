@@ -122,7 +122,7 @@ def chat_endpoint(req: ChatRequest):
 # === Upload organizado por biblioteca ===
 from fastapi import Form, File, UploadFile
 from pathlib import Path
-from backend.app.services.storage import save_upload
+from app.services.storage import save_upload
 
 @app.post("/upload")
 async def upload_document(library: str | None = Form(None), file: UploadFile = File(...)):
@@ -139,3 +139,4 @@ async def upload_document(library: str | None = Form(None), file: UploadFile = F
         "size": size,
         "message": "Arquivo salvo com sucesso."
     }
+
