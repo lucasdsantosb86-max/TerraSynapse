@@ -260,3 +260,4 @@ with tabs[2]:
 # ======================================================
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
+
