@@ -1,0 +1,4 @@
+﻿Exemplos de perguntas (Teste)
+- Quais são os passos do Checklist de Produção?
+- Como calcular ExG e quais limitações?
+- Como acelerar a busca usando Padrão de documentos?

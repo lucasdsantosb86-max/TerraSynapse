@@ -10,6 +10,7 @@ import numpy as np
 import base64
 
 from .services.qa import answer_question_by_document
+from .services import chat
 from .services.exg import compute_exg
 from .services.pdf import build_simple_pdf
 
@@ -91,3 +92,29 @@ async def upload_doc(file: UploadFile = File(...)):
         return {"saved": str(dest)}
     except Exception as e:
         raise HTTPException(500, f"Falha ao salvar: {e}")
+
+
+from typing import Optional
+from pydantic import BaseModel
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list
+    doc_paths: Optional[list] = None
+    top_k: int = 4
+
+class ChatResponse(BaseModel):
+    assistant: str
+    sources: list
+
+@app.post("/chat", response_model=ChatResponse)
+def chat_endpoint(req: ChatRequest):
+    try:
+        assistant, sources = chat.answer_chat(req.messages, req.doc_paths, top_k=req.top_k)
+        return ChatResponse(assistant=assistant, sources=sources)
+    except Exception as e:
+        raise HTTPException(400, f"Erro no chat: {e}")
+
