@@ -7,16 +7,15 @@ import requests
 import streamlit as st
 from PIL import Image
 
-# ---------- Config ----------
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 LOGO_PATH = Path(__file__).parent / "assets" / "logo.png"
 
-PAGE_ICON = "🌱"
+PAGE_ICON = ""
 if LOGO_PATH.exists():
     try:
         PAGE_ICON = Image.open(LOGO_PATH)
     except Exception:
-        PAGE_ICON = "🌱"
+        PAGE_ICON = ""
 
 st.set_page_config(
     page_title="TerraSynapse",
@@ -24,7 +23,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# ---------- CSS global: tema, contraste, header, badge ----------
+# ---------- CSS global ----------
 st.markdown("""
 <style>
 :root{
@@ -35,42 +34,28 @@ st.markdown("""
   --ts-accent:#F3F1C4;
   --ts-line:#706E5D;
 }
-
-/* Oculta cabeçalhos nativos do Streamlit */
 header[data-testid="stHeader"] { display:none !important; }
 div[data-testid="stToolbar"] { display:none !important; }
 #MainMenu, footer { visibility:hidden; height:0; }
 
-/* Espaçamento do conteúdo */
 .block-container { padding-top: 0.9rem !important; padding-bottom: 1.0rem; }
 
-/* Brand */
-.ts-brand {
-  display:flex; align-items:center; gap:.8rem;
-  margin: .10rem 0 .15rem 0;
-}
+.ts-brand { display:flex; align-items:center; gap:.8rem; margin:.10rem 0 .15rem 0; }
 .ts-logo { width:46px; height:46px; object-fit:contain; border-radius:8px; display:block; }
 .ts-title { font-weight:800; font-size:1.30rem; line-height:1.1; margin:0; padding:0; }
 .ts-tagline { color:var(--ts-ink-soft); margin-top:.10rem; font-size:.96rem; }
 .ts-rule { height:1px; background: var(--ts-line); opacity:.35; margin:.55rem 0 1.05rem 0; }
 
-/* Inputs / Textareas */
-.stTextInput > div > div,
-.stTextArea  > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }
-.stTextInput > div > div:focus-within,
-.stTextArea  > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }
-.stTextInput input::placeholder,
-.stTextArea  textarea::placeholder { color:#9F9D8E; opacity:.95; }
+.stTextInput > div > div, .stTextArea > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }
+.stTextInput > div > div:focus-within, .stTextArea > div > div:focus-within { box-shadow:0 0 0 2px rgba(243,241,196,.35); }
+.stTextInput input::placeholder, .stTextArea textarea::placeholder { color:#9F9D8E; opacity:.95; }
 
-/* Selectbox */
 .stSelectbox > div > div { background:#403F2B; border:1px solid #706E5D; border-radius:.75rem; }
 .stSelectbox [data-baseweb="select"] [role="combobox"] { color:#CFCBC0; }
 
-/* Slider */
 .stSlider [data-baseweb="slider"] > div > div { background:#403F2B; }
 .stSlider [role="slider"] { background:#F3F1C4; }
 
-/* Botões */
 .stDownloadButton > button, .stButton > button {
   background:#F3F1C4; color:#1b1b1b; border:0; border-radius:.8rem;
   padding:.55rem 1.05rem; font-weight:700;
@@ -78,42 +63,23 @@ div[data-testid="stToolbar"] { display:none !important; }
 .stDownloadButton > button:disabled, .stButton > button:disabled {
   filter:grayscale(.5) brightness(.85); opacity:.75; cursor:not-allowed;
 }
-.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) {
-  filter:brightness(.96);
-}
+.stDownloadButton > button:hover:not(:disabled), .stButton > button:hover:not(:disabled) { filter:brightness(.96); }
 
-/* Uploader */
-[data-testid="stFileUploader"] > div:first-child {
-  background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem;
-}
+[data-testid="stFileUploader"] > div:first-child { background:#403F2B; border:1px dashed #706E5D; border-radius:.8rem; }
 
-/* Tabs */
 .stTabs [data-baseweb="tab-list"] { gap:.5rem; }
-.stTabs [data-baseweb="tab"]{
-  background:var(--ts-bg-2); color:var(--ts-ink);
-  border-radius:.75rem; padding:.35rem .9rem;
-}
-.stTabs [aria-selected="true"]{
-  background:var(--ts-line); color:var(--ts-accent); font-weight:800;
-}
+.stTabs [data-baseweb="tab"]{ background:var(--ts-bg-2); color:var(--ts-ink); border-radius:.75rem; padding:.35rem .9rem; }
+.stTabs [aria-selected="true"]{ background:var(--ts-line); color:var(--ts-accent); font-weight:800; }
 
-/* Badge "em breve" na 4ª aba (sem HTML no label) */
-.stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4){
-  position: relative;
-}
+/* Badge "em breve" por CSS na 4ª aba */
+.stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4){ position: relative; }
 .stTabs [data-baseweb="tab-list"] [data-baseweb="tab"]:nth-child(4)::after{
-  content: "em breve";
-  display:inline-block;
-  margin-left:.45rem;
-  padding:.05rem .40rem;
-  border-radius:.50rem;
-  background:#706E5D;
-  color:#F3F1C4;
-  font-size:.80rem;
-  font-weight:700;
+  content: "em breve"; display:inline-block; margin-left:.45rem; padding:.05rem .40rem;
+  border-radius:.50rem; background:#706E5D; color:#F3F1C4; font-size:.80rem; font-weight:700;
 }
 
-/* Responsivo */
+.ts-source { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:.9rem; color:var(--ts-ink); opacity:.9; }
+
 @media (max-width: 640px){
   .block-container { padding-top: .6rem !important; }
   .ts-logo { width:40px; height:40px; }
@@ -122,7 +88,7 @@ div[data-testid="stToolbar"] { display:none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Favicon dedicado (além do page_icon) ----------
+# Favicon dedicado
 try:
     if LOGO_PATH.exists():
         _b64fav = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
@@ -130,16 +96,16 @@ try:
 except Exception:
     pass
 
-# ---------- Header render ----------
+# Branding
 def render_brand():
     if LOGO_PATH.exists():
         try:
             b64 = base64.b64encode(open(LOGO_PATH, "rb").read()).decode("utf-8")
             logo_html = f'<img class="ts-logo" src="data:image/png;base64,{b64}" alt="TerraSynapse logo" />'
         except Exception:
-            logo_html = '<span class="ts-logo">🌱</span>'
+            logo_html = '<span class="ts-logo"></span>'
     else:
-        logo_html = '<span class="ts-logo">🌱</span>'
+        logo_html = '<span class="ts-logo"></span>'
 
     st.markdown(
         f"""
@@ -147,7 +113,7 @@ def render_brand():
           {logo_html}
           <div>
             <div class="ts-title">TerraSynapse</div>
-            <div class="ts-tagline">Plataforma de IA para o agronegócio — QA por documento, ExG e Laudo PDF.</div>
+            <div class="ts-tagline">Plataforma de IA para o agronegócio  QA por documento, ExG e Laudo PDF.</div>
           </div>
         </div>
         <div class="ts-rule"></div>
@@ -157,19 +123,18 @@ def render_brand():
 
 render_brand()
 
-# ---------- Abas (strings simples, sem HTML/emoji) ----------
+# Abas
 tabs = st.tabs(["Buscar respostas", "ExG", "Laudo PDF", "Clima"])
 
-# ======================================================
-# TAB 1 — QA por documento
-# ======================================================
+# === Estado de chat ===
+if 'chat_messages' not in st.session_state:
+    st.session_state['chat_messages'] = []
+
+# ===================== TAB 1: Chat =====================
 with tabs[0]:
-    st.subheader("Buscar respostas por documento")
+    st.subheader("Chat  TerraSynapse (RAG)")
 
-    st.write("Envie arquivos de conhecimento **(.md, .txt, .pdf)** e faça perguntas. "
-             "Enquanto o banco cresce, o app usa os docs enviados + exemplos.")
-
-    with st.expander("➕ Enviar documentos", expanded=False):
+    with st.expander(" Enviar documentos", expanded=False):
         uploads = st.file_uploader("Arquivos (.md, .txt, .pdf)", type=["md","txt","pdf"], accept_multiple_files=True)
         if uploads and st.button("Enviar para a IA"):
             ok, fail = 0, 0
@@ -184,38 +149,58 @@ with tabs[0]:
             if ok and not fail:
                 st.success(f"{ok} arquivo(s) enviado(s) com sucesso.")
             else:
-                st.warning(f"Uploads concluídos. Sucesso: {ok} • Falhas: {fail}")
+                st.warning(f"Uploads concluídos. Sucesso: {ok}  Falhas: {fail}")
 
-    ask = st.text_input("Sua pergunta", placeholder="Ex.: Como ajustar manejo em período de seca?")
-    st.caption("Fontes padrão: docs enviados (`data/docs`) + exemplos internos. "
-               "Pode informar um padrão de busca abaixo, se quiser.")
-    custom_glob = st.text_input("Padrão de documentos (opcional)", value="", placeholder="Deixe vazio para usar padrão automático")
-    top_k = st.slider("Quantas fontes considerar (Top K)", 1, 10, 5)
+    c1, c2 = st.columns([2,1])
+    with c1:
+        custom_glob = st.text_input("Padrão de documentos (opcional)", value="", placeholder="Ex.: data/docs/TerraSynapse_OPS_*/**/*.md")
+    with c2:
+        top_k = st.slider("Top K fontes", 1, 10, 4)
 
-    if st.button("Buscar resposta"):
-        payload = {"question": ask, "doc_paths": [custom_glob] if custom_glob.strip() else None, "top_k": top_k}
+    # histórico
+    for m in st.session_state['chat_messages']:
+        with st.chat_message(m["role"]):
+            st.markdown(m["content"])
+
+    prompt = st.chat_input("Digite sua pergunta e pressione Enter")
+    if prompt:
+        st.session_state['chat_messages'].append({"role":"user","content":prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
         try:
-            r = requests.post(f"{API_URL}/qa", json=payload, timeout=120)
+            payload = {
+                "messages": st.session_state['chat_messages'],
+                "doc_paths": [custom_glob] if custom_glob.strip() else None,
+                "top_k": int(top_k),
+            }
+            r = requests.post(f"{API_URL}/chat", json=payload, timeout=120)
             if r.ok:
                 data = r.json()
-                st.success("✅ Resposta encontrada:")
-                st.write(data.get("answer", ""))
-
-                sources = data.get("sources", []) or []
-                if sources:
-                    st.markdown("**Fontes utilizadas:**")
-                    for s in sources:
-                        st.markdown(f'<div class="ts-source">• {s}</div>', unsafe_allow_html=True)
-                else:
-                    st.caption("Nenhuma fonte retornada.")
+                assistant = data.get("assistant","(sem resposta)")
+                sources = data.get("sources",[]) or []
+                st.session_state['chat_messages'].append({"role":"assistant","content":assistant})
+                with st.chat_message("assistant"):
+                    st.markdown(assistant)
+                    if sources:
+                        with st.expander("Fontes utilizadas"):
+                            for s in sources:
+                                st.markdown(f"- `{s}`")
             else:
-                st.error(r.text)
+                err = r.text
+                st.session_state['chat_messages'].append({"role":"assistant","content":f"Erro da API: {err}"})
+                with st.chat_message("assistant"):
+                    st.error(err)
         except Exception as e:
-            st.error(f"Erro ao consultar a API: {e}")
+            st.session_state['chat_messages'].append({"role":"assistant","content":f"Erro: {e}"})
+            with st.chat_message("assistant"):
+                st.error(f"Erro: {e}")
 
-# ======================================================
-# TAB 2 — Índice ExG
-# ======================================================
+    if st.button(" Resetar conversa"):
+        st.session_state['chat_messages'] = []
+        st.experimental_rerun()
+
+# ===================== TAB 2: ExG =====================
 with tabs[1]:
     st.subheader("Índice de Vegetação ExG")
     img = st.file_uploader("Imagem RGB", type=["jpg","jpeg","png"], key="exg_upl")
@@ -234,9 +219,7 @@ with tabs[1]:
         except Exception as e:
             st.error(f"Erro ao processar imagem: {e}")
 
-# ======================================================
-# TAB 3 — Laudo PDF
-# ======================================================
+# ===================== TAB 3: Laudo PDF =====================
 with tabs[2]:
     st.subheader("Gerar Laudo PDF")
     title = st.text_input("Título", "Laudo TerraSynapse")
@@ -255,9 +238,6 @@ with tabs[2]:
         except Exception as e:
             st.error(f"Erro ao gerar PDF: {e}")
 
-# ======================================================
-# TAB 4 — Clima (placeholder)
-# ======================================================
+# ===================== TAB 4: Clima (placeholder) =====================
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
-
