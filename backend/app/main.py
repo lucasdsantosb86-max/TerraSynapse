@@ -118,3 +118,24 @@ def chat_endpoint(req: ChatRequest):
     except Exception as e:
         raise HTTPException(400, f"Erro no chat: {e}")
 
+
+# === Upload organizado por biblioteca ===
+from fastapi import Form, File, UploadFile
+from pathlib import Path
+from backend.app.services.storage import save_upload
+
+@app.post("/upload")
+async def upload_document(library: str | None = Form(None), file: UploadFile = File(...)):
+    """
+    Salva o arquivo em data/docs/<library>/<YYYY>/<MM>/arquivo.ext
+    e registra metadados em data/docs/_index/docs.jsonl.
+    """
+    root = Path(__file__).resolve().parents[3]
+    dst_path, size = save_upload(root, file, library)
+    return {
+        "ok": True,
+        "library": library or "_inbox",
+        "path": str(dst_path.relative_to(root)),
+        "size": size,
+        "message": "Arquivo salvo com sucesso."
+    }

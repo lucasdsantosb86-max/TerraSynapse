@@ -135,7 +135,7 @@ with tabs[0]:
     st.subheader("Chat  TerraSynapse (RAG)")
 
     with st.expander(" Enviar documentos", expanded=False):
-        uploads = st.file_uploader("Arquivos (.md, .txt, .pdf)", type=["md","txt","pdf"], accept_multiple_files=True)
+        uploads = library = st.selectbox('Biblioteca', ['_inbox (padrão)','manuals','agronomy','exg','operations','vendor','faq','_archive'], index=0)\n\nst.file_uploader("Arquivos (.md, .txt, .pdf)", type=["md","txt","pdf"], accept_multiple_files=True)
         if uploads and st.button("Enviar para a IA"):
             ok, fail = 0, 0
             for f in uploads:
@@ -203,7 +203,7 @@ with tabs[0]:
 # ===================== TAB 2: ExG =====================
 with tabs[1]:
     st.subheader("Índice de Vegetação ExG")
-    img = st.file_uploader("Imagem RGB", type=["jpg","jpeg","png"], key="exg_upl")
+    img = library = st.selectbox('Biblioteca', ['_inbox (padrão)','manuals','agronomy','exg','operations','vendor','faq','_archive'], index=0)\n\nst.file_uploader("Imagem RGB", type=["jpg","jpeg","png"], key="exg_upl")
     if img and st.button("Calcular ExG"):
         try:
             files = {"file": (img.name, img.getvalue(), img.type)}
@@ -241,3 +241,5 @@ with tabs[2]:
 # ===================== TAB 4: Clima (placeholder) =====================
 with tabs[3]:
     st.info("Módulo de clima será integrado em breve (dados públicos + alertas).")
+
+
